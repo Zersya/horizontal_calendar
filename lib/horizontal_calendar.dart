@@ -35,6 +35,7 @@ class HorizontalCalendar extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final List<LabelType> labelOrder;
   final int maxSelectedDateCount;
+  final bool isWeekdayFirstLetter;
 
   HorizontalCalendar({
     Key key,
@@ -63,6 +64,7 @@ class HorizontalCalendar extends StatefulWidget {
     this.initialSelectedDates,
     this.spacingBetweenDates = 8.0,
     this.padding = const EdgeInsets.all(8.0),
+    this.isWeekdayFirstLetter,
     this.labelOrder = const [
       LabelType.month,
       LabelType.date,
@@ -115,6 +117,7 @@ class _HorizontalCalendarState extends State<HorizontalCalendar> {
                   isDisabled: widget.isDateDisabled != null
                       ? widget.isDateDisabled(date)
                       : false,
+                  isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
                   date: date,
                   monthTextStyle: widget.monthTextStyle,
                   selectedMonthTextStyle: widget.selectedMonthTextStyle,
