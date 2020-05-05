@@ -35,10 +35,11 @@ class HorizontalCalendar extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final List<LabelType> labelOrder;
   final int maxSelectedDateCount;
+  final bool isWeekdayFirstLetter;
 
   HorizontalCalendar({
     Key key,
-    this.height = 100,
+    this.height = 130,
     @required this.firstDate,
     @required this.lastDate,
     this.scrollController,
@@ -63,6 +64,7 @@ class HorizontalCalendar extends StatefulWidget {
     this.initialSelectedDates,
     this.spacingBetweenDates = 8.0,
     this.padding = const EdgeInsets.all(8.0),
+    this.isWeekdayFirstLetter,
     this.labelOrder = const [
       LabelType.month,
       LabelType.date,
@@ -96,6 +98,23 @@ class _HorizontalCalendarState extends State<HorizontalCalendar> {
   }
 
   @override
+  void didUpdateWidget(HorizontalCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.firstDate != widget.firstDate) {
+      allDates.clear();
+      allDates.addAll(getDateList(widget.firstDate, widget.lastDate));
+      if (widget.initialSelectedDates != null) {
+        selectedDates.clear();
+        selectedDates
+            .addAll(widget.initialSelectedDates.map((toDateMonthYear)));
+      }
+
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
@@ -115,6 +134,7 @@ class _HorizontalCalendarState extends State<HorizontalCalendar> {
                   isDisabled: widget.isDateDisabled != null
                       ? widget.isDateDisabled(date)
                       : false,
+                  isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
                   date: date,
                   monthTextStyle: widget.monthTextStyle,
                   selectedMonthTextStyle: widget.selectedMonthTextStyle,

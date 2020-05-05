@@ -26,6 +26,7 @@ class DateWidget extends StatelessWidget {
   final bool isDisabled;
   final EdgeInsetsGeometry padding;
   final List<LabelType> labelOrder;
+  final bool isWeekdayFirstLetter;
 
   const DateWidget({
     Key key,
@@ -48,6 +49,7 @@ class DateWidget extends StatelessWidget {
     this.disabledDecoration = const BoxDecoration(color: Colors.grey),
     this.padding,
     this.labelOrder,
+    this.isWeekdayFirstLetter = false,
   }) : super(key: key);
 
   @override
@@ -94,14 +96,21 @@ class DateWidget extends StatelessWidget {
                     );
                     break;
                   case LabelType.weekday:
+                    String weekdayText = DateFormat(weekDayFormat ?? defaultWeekDayFormat)
+                          .format(date);
                     text = Text(
-                      DateFormat(weekDayFormat ?? defaultWeekDayFormat)
-                          .format(date),
+                      isWeekdayFirstLetter ? weekdayText[0]:weekdayText,
                       style: dayStyle,
                     );
                     break;
                 }
-                return text;
+                int index = labelOrder.indexOf(type);
+                return Column(
+                  children: <Widget>[
+                    text,
+                    index != labelOrder.length-1 ? SizedBox(height: 12.0,):SizedBox()
+                  ],
+                );
               }).toList(growable: false)
             ],
           ),
