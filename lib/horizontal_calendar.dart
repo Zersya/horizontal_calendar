@@ -100,136 +100,156 @@ class _HorizontalCalendarState extends State<HorizontalCalendar> {
   }
 
   @override
+  void didUpdateWidget(HorizontalCalendar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.firstDate != widget.firstDate) {
+      allDates.clear();
+      allDates.addAll(getDateList(widget.firstDate, widget.lastDate));
+      if (widget.initialSelectedDates != null) {
+        selectedDates
+            .addAll(widget.initialSelectedDates.map((toDateMonthYear)));
+      }
+
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
       child: Center(
-        child: widget.isNoScroll ? Row(
-          children: <Widget>[
-            ...allDates.map((date) {
-              return Expanded(
-                child: Padding(
-                  padding:  EdgeInsets.all(widget.spacingBetweenDates/2),
-                  child: DateWidget(
-                    key: Key(date.toIso8601String()),
-                    padding: widget.padding,
-                    isSelected: selectedDates.contains(date),
-                    isDisabled: widget.isDateDisabled != null
-                        ? widget.isDateDisabled(date)
-                        : false,
-                    isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
-                    date: date,
-                    monthTextStyle: widget.monthTextStyle,
-                    selectedMonthTextStyle: widget.selectedMonthTextStyle,
-                    monthFormat: widget.monthFormat,
-                    dateTextStyle: widget.dateTextStyle,
-                    selectedDateTextStyle: widget.selectedDateTextStyle,
-                    dateFormat: widget.dateFormat,
-                    weekDayTextStyle: widget.weekDayTextStyle,
-                    selectedWeekDayTextStyle: widget.selectedWeekDayTextStyle,
-                    weekDayFormat: widget.weekDayFormat,
-                    defaultDecoration: widget.defaultDecoration,
-                    selectedDecoration: widget.selectedDecoration,
-                    disabledDecoration: widget.disabledDecoration,
-                    labelOrder: widget.labelOrder,
-                    onTap: () {
-                      if (!selectedDates.contains(date)) {
-                        if (widget.maxSelectedDateCount == 1 &&
-                            selectedDates.length == 1) {
-                          selectedDates.clear();
-                        } else if (widget.maxSelectedDateCount ==
-                            selectedDates.length) {
-                          if (widget.onMaxDateSelectionReached != null) {
-                            widget.onMaxDateSelectionReached();
+        child: widget.isNoScroll
+            ? Row(
+                children: <Widget>[
+                  ...allDates.map((date) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.all(widget.spacingBetweenDates / 2),
+                        child: DateWidget(
+                          key: Key(date.toIso8601String()),
+                          padding: widget.padding,
+                          isSelected: selectedDates.contains(date),
+                          isDisabled: widget.isDateDisabled != null
+                              ? widget.isDateDisabled(date)
+                              : false,
+                          isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
+                          date: date,
+                          monthTextStyle: widget.monthTextStyle,
+                          selectedMonthTextStyle: widget.selectedMonthTextStyle,
+                          monthFormat: widget.monthFormat,
+                          dateTextStyle: widget.dateTextStyle,
+                          selectedDateTextStyle: widget.selectedDateTextStyle,
+                          dateFormat: widget.dateFormat,
+                          weekDayTextStyle: widget.weekDayTextStyle,
+                          selectedWeekDayTextStyle:
+                              widget.selectedWeekDayTextStyle,
+                          weekDayFormat: widget.weekDayFormat,
+                          defaultDecoration: widget.defaultDecoration,
+                          selectedDecoration: widget.selectedDecoration,
+                          disabledDecoration: widget.disabledDecoration,
+                          labelOrder: widget.labelOrder,
+                          onTap: () {
+                            if (!selectedDates.contains(date)) {
+                              if (widget.maxSelectedDateCount == 1 &&
+                                  selectedDates.length == 1) {
+                                selectedDates.clear();
+                              } else if (widget.maxSelectedDateCount ==
+                                  selectedDates.length) {
+                                if (widget.onMaxDateSelectionReached != null) {
+                                  widget.onMaxDateSelectionReached();
+                                }
+                                return;
+                              }
+
+                              selectedDates.add(date);
+                              if (widget.onDateSelected != null) {
+                                widget.onDateSelected(date);
+                              }
+                            } else {
+                              final isRemoved = selectedDates.remove(date);
+                              if (isRemoved &&
+                                  widget.onDateUnSelected != null) {
+                                widget.onDateUnSelected(date);
+                              }
+                            }
+                            setState(() {});
+                          },
+                          onLongTap: () => widget.onDateLongTap != null
+                              ? widget.onDateLongTap(date)
+                              : null,
+                        ),
+                      ),
+                    );
+                  })
+                ],
+              )
+            : ListView.builder(
+                controller: widget.scrollController ?? ScrollController(),
+                scrollDirection: Axis.horizontal,
+                itemCount: allDates.length,
+                itemBuilder: (context, index) {
+                  final date = allDates[index];
+                  return Row(
+                    children: <Widget>[
+                      DateWidget(
+                        key: Key(date.toIso8601String()),
+                        padding: widget.padding,
+                        isSelected: selectedDates.contains(date),
+                        isDisabled: widget.isDateDisabled != null
+                            ? widget.isDateDisabled(date)
+                            : false,
+                        isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
+                        date: date,
+                        monthTextStyle: widget.monthTextStyle,
+                        selectedMonthTextStyle: widget.selectedMonthTextStyle,
+                        monthFormat: widget.monthFormat,
+                        dateTextStyle: widget.dateTextStyle,
+                        selectedDateTextStyle: widget.selectedDateTextStyle,
+                        dateFormat: widget.dateFormat,
+                        weekDayTextStyle: widget.weekDayTextStyle,
+                        selectedWeekDayTextStyle:
+                            widget.selectedWeekDayTextStyle,
+                        weekDayFormat: widget.weekDayFormat,
+                        defaultDecoration: widget.defaultDecoration,
+                        selectedDecoration: widget.selectedDecoration,
+                        disabledDecoration: widget.disabledDecoration,
+                        labelOrder: widget.labelOrder,
+                        onTap: () {
+                          if (!selectedDates.contains(date)) {
+                            if (widget.maxSelectedDateCount == 1 &&
+                                selectedDates.length == 1) {
+                              selectedDates.clear();
+                            } else if (widget.maxSelectedDateCount ==
+                                selectedDates.length) {
+                              if (widget.onMaxDateSelectionReached != null) {
+                                widget.onMaxDateSelectionReached();
+                              }
+                              return;
+                            }
+
+                            selectedDates.add(date);
+                            if (widget.onDateSelected != null) {
+                              widget.onDateSelected(date);
+                            }
+                          } else {
+                            final isRemoved = selectedDates.remove(date);
+                            if (isRemoved && widget.onDateUnSelected != null) {
+                              widget.onDateUnSelected(date);
+                            }
                           }
-                          return;
-                        }
-
-                        selectedDates.add(date);
-                        if (widget.onDateSelected != null) {
-                          widget.onDateSelected(date);
-                        }
-                      } else {
-                        final isRemoved = selectedDates.remove(date);
-                        if (isRemoved && widget.onDateUnSelected != null) {
-                          widget.onDateUnSelected(date);
-                        }
-                      }
-                      setState(() {});
-                    },
-                    onLongTap: () => widget.onDateLongTap != null
-                        ? widget.onDateLongTap(date)
-                        : null,
-                  ),
-                ),
-              );
-            })
-          ],
-        ):
-        ListView.builder(
-          controller: widget.scrollController ?? ScrollController(),
-          scrollDirection: Axis.horizontal,
-          itemCount: allDates.length,
-          itemBuilder: (context, index) {
-            final date = allDates[index];
-            return Row(
-              children: <Widget>[
-                DateWidget(
-                  key: Key(date.toIso8601String()),
-                  padding: widget.padding,
-                  isSelected: selectedDates.contains(date),
-                  isDisabled: widget.isDateDisabled != null
-                      ? widget.isDateDisabled(date)
-                      : false,
-                  isWeekdayFirstLetter: widget.isWeekdayFirstLetter,
-                  date: date,
-                  monthTextStyle: widget.monthTextStyle,
-                  selectedMonthTextStyle: widget.selectedMonthTextStyle,
-                  monthFormat: widget.monthFormat,
-                  dateTextStyle: widget.dateTextStyle,
-                  selectedDateTextStyle: widget.selectedDateTextStyle,
-                  dateFormat: widget.dateFormat,
-                  weekDayTextStyle: widget.weekDayTextStyle,
-                  selectedWeekDayTextStyle: widget.selectedWeekDayTextStyle,
-                  weekDayFormat: widget.weekDayFormat,
-                  defaultDecoration: widget.defaultDecoration,
-                  selectedDecoration: widget.selectedDecoration,
-                  disabledDecoration: widget.disabledDecoration,
-                  labelOrder: widget.labelOrder,
-                  onTap: () {
-                    if (!selectedDates.contains(date)) {
-                      if (widget.maxSelectedDateCount == 1 &&
-                          selectedDates.length == 1) {
-                        selectedDates.clear();
-                      } else if (widget.maxSelectedDateCount ==
-                          selectedDates.length) {
-                        if (widget.onMaxDateSelectionReached != null) {
-                          widget.onMaxDateSelectionReached();
-                        }
-                        return;
-                      }
-
-                      selectedDates.add(date);
-                      if (widget.onDateSelected != null) {
-                        widget.onDateSelected(date);
-                      }
-                    } else {
-                      final isRemoved = selectedDates.remove(date);
-                      if (isRemoved && widget.onDateUnSelected != null) {
-                        widget.onDateUnSelected(date);
-                      }
-                    }
-                    setState(() {});
-                  },
-                  onLongTap: () => widget.onDateLongTap != null
-                      ? widget.onDateLongTap(date)
-                      : null,
-                ),
-                SizedBox(width: widget.spacingBetweenDates),
-              ],
-            );
-          },
-        ),
+                          setState(() {});
+                        },
+                        onLongTap: () => widget.onDateLongTap != null
+                            ? widget.onDateLongTap(date)
+                            : null,
+                      ),
+                      SizedBox(width: widget.spacingBetweenDates),
+                    ],
+                  );
+                },
+              ),
       ),
     );
   }
