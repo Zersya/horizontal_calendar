@@ -104,7 +104,13 @@ class DateWidget extends StatelessWidget {
                     );
                     break;
                 }
-                return text;
+                int index = labelOrder.indexOf(type);
+                return Column(
+                  children: <Widget>[
+                    text,
+                    index != labelOrder.length-1 ? SizedBox(height: 12.0,):SizedBox()
+                  ],
+                );
               }).toList(growable: false)
             ],
           ),
